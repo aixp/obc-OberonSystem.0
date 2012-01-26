@@ -1,0 +1,27 @@
+This is custom implementation of subset of Oberon System 3:
+	Reals (partial)
+	Texts (partial, some changed)
+	Files (re-implemented)
+	Oberon (re-implemented)
+	Display (part of interface only, to support Oberon.Log)
+	Sets (no changes)
+
+NOTES:
+	Oberon.Par access via file "par"
+	Oberon.GetSelection and Oberon.MarkedText via file with name specified in 1st arg of command line
+
+TODO:
+	Files:
+		Old:
+			if file already open, return it's descriptor instead of opening file twice
+			except anonymous (temporary) files
+
+	tests:
+		OFiles (especially, Rename)
+		Reals
+		Texts
+
+NOTES:
+	Original modules (*.Mod) was taken from A2 distribution
+	Files renamed to OFiles to avoid conflict with OBC Files
+	A2:Reals = Oberon:Reals (2012.01)
