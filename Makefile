@@ -1,3 +1,9 @@
+# This is BSD Makefile
+#    BSD       GNU
+# ${.TARGET}    $@
+# ${.ALLSRC}    $^
+# ${.IMPSRC}    $<
+
 .SUFFIXES: .Mod .m .k
 
 all: Oberon.Sets.m Oberon.k Texts.k OFiles.k Reals.k TextsTest1 OberonLogTest1 InTest1
@@ -30,7 +36,7 @@ Sets.k: Texts.k
 ##
 
 .Mod.m:
-	o2txt ${.IMPSRC} | sed 's/SHORTINT/BYTEE/g;s/INTEGER/SHORTINT/g;s/LONGINT/INTEGER/g;s/HUGEINT/LONGINT/g;s/ IN Oberon;/;/g;s/, Files;/, Files:=OFiles;/g' > ${.TARGET}
+	./o2txt.py ${.IMPSRC} | sed 's/SHORTINT/BYTEE/g;s/INTEGER/SHORTINT/g;s/LONGINT/INTEGER/g;s/HUGEINT/LONGINT/g;s/ IN Oberon;/;/g;s/, Files;/, Files:=OFiles;/g' > ${.TARGET}
 
 .m.k:
 	obc -c ${.IMPSRC}
