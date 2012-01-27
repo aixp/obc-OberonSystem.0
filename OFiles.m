@@ -10,8 +10,8 @@ MODULE OFiles;
 
 		seekable files only supported, and, partially, stdin
 	TODO:
-		see Remarks and implement this module
-			(at least 2 item)
+		see Remarks and re-implement this module
+			(at least 2nd item)
 		support stdin via freopen() ?
 		partial support of non-seekable files ?:
 			freopen() ?
