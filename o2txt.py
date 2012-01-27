@@ -6,6 +6,10 @@
 
 import sys, re
 
+TextBlockId = chr(0xf0)
+OldTextBlockId = chr(0x01)
+DocBlockId = chr(0xf7)
+
 # разделить такст на строки (в тексте могут использоваться разные разделители строк)
 def splitToLines (text):
 	lines = []
@@ -43,8 +47,17 @@ class Reader:
 				self.pos = self.pos + 1
 				return c
 
-	# 4 B signed integer, little-endian
+	# 2 B signed integer, little-endian
 	def ReadInt (self):
+		c0 = self.Read()
+		c1 = self.Read()
+		x = ord(c0) + 0x100 * ord(c1)
+		if x >= 32768:
+			x = x - 65536
+		return x
+
+	# 4 B signed integer, little-endian
+	def ReadLInt (self):
 		c0 = self.Read()
 		c1 = self.Read()
 		c2 = self.Read()
@@ -54,19 +67,41 @@ class Reader:
 			x = x - 4294967296
 		return x
 
+	def ReadString (self):
+		r = []
+		ch = self.Read()
+		while ch != chr(0):
+			r.append(ch)
+			ch = self.Read()
+		return ''.join(r)
+
+def ReadDocHeader (r):
+	ch = r.Read()
+	name = r.ReadString()
+	x = r.ReadInt()
+	y = r.ReadInt()
+	w = r.ReadInt()
+	h = r.ReadInt()
+	ch = r.Read()
+	if ch == chr(0xf7): # skip meta info
+		ch = r.Read()
+		if ch == chr(0x08):
+			l = r.ReadLInt()
+			r.SetPos(r.pos + l)
+			ch = r.Read()
+	return ch
+
 def ReadTextBlock (r):
-	c = r.Read()
-	if c == chr(0xf0):
-		tip = ord(r.Read())
-		assert tip == 1
-		hlen = r.ReadInt()
-		r.SetPos(r.pos + hlen - 11)
-		zero = ord(r.Read())
-		assert zero == 0
-		tlen = r.ReadInt()
-		text = r.f.read(tlen)
-		r.SetPos(r.pos + tlen)
-		return text
+	tip = ord(r.Read())
+	# assert tip == 1
+	hlen = r.ReadLInt()
+	r.SetPos(r.pos + hlen - 11)
+	zero = ord(r.Read())
+	assert zero == 0
+	tlen = r.ReadLInt()
+	text = r.f.read(tlen)
+	r.SetPos(r.pos + tlen)
+	return text
 
 def main ():
 	if (len(sys.argv) != 2) and (len(sys.argv) != 3):
@@ -76,12 +111,13 @@ def main ():
 
 		f = open(sys.argv[1], 'rb')
 		r = Reader(f, 0)
-		if r.Read() == chr(0xf0): # Oberon file
-			r.SetPos(0)
+		ch = r.Read()
+		if ch == DocBlockId:
+			ch = ReadDocHeader(r)
+		if (ch == TextBlockId) or (ch == OldTextBlockId): # Oberon file
 			text = ReadTextBlock(r)
-			while text != None:
+			if text != None:
 				res.append(text)
-				text = ReadTextBlock(r)
 		else: # ASCII file?
 			f.seek(0)
 			t = f.read()
