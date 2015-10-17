@@ -1,5 +1,5 @@
 #! /usr/bin/env python2.7
-# -*- coding: koi8-r -*-
+# -*- coding: utf-8 -*-
 #
 # convert Oberon System and A2 files to ASCII
 # implementation based on definition (see Texts.Mod)
@@ -10,7 +10,7 @@ TextBlockId = chr(0xf0)
 OldTextBlockId = chr(0x01)
 DocBlockId = chr(0xf7)
 
-# разделить такст на строки (в тексте могут использоваться разные разделители строк)
+# я─п╟п╥п╢п╣п╩п╦я┌я▄ я┌п╟п╨я│я┌ п╫п╟ я│я┌я─п╬п╨п╦ (п╡ я┌п╣п╨я│я┌п╣ п╪п╬пЁя┐я┌ п╦я│п©п╬п╩я▄п╥п╬п╡п╟я┌я▄я│я▐ я─п╟п╥п╫я▀п╣ я─п╟п╥п╢п╣п╩п╦я┌п╣п╩п╦ я│я┌я─п╬п╨)
 def splitToLines (text):
 	lines = []
 	for l in text.split('\r\n'):
